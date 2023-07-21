@@ -14,7 +14,17 @@ return [
     */
     'Hello gus' => 'Hello GUS',
     'Welcome' => 'WELCOME ',
-   
+    'offer name required' =>'Offer Name Required',
+    'offer name must be uniqe' => 'Offer Name Must Be Uniqe',
+    'Add Your Offers' => 'Add Your Offer',
+    'Offer Name Ar' =>'Arabic Offer Name',
+    'Offer Name En' =>'English Offer Name',
+    'Offer Price' =>'Offer Price',
+    'Offer Details Ar' =>'Arabic Offer Details',
+    'Offer Details En' =>'English Offer Details',
+    'Offer Name' =>'Offer Name',
+    'Offer Details' =>'Offer Details',
+    'Save Offer' =>'Save',
     
 
 ];

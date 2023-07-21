@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\Admin\SecondController;
+use App\Http\Controllers\CrudController;
 use App\Http\Controllers\Front\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Routing\Controller;
@@ -104,5 +105,20 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::get('/',function(){
     return 'Home';
+});
+
+Route::get('fillable',[CrudController::class,'getOffers']);
+
+Route::group(['prefix' => LaravelLocalization::setlocale(),'middleware' => [ 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath' ]], function(){
+     Route::group(['prefix'=>'offers'],function(){
+    //Route::get('store',[CrudController::class,'store']);
+   
+    Route::get('create',[CrudController::class,'create']);
+    Route::post('store',[CrudController::class,'store'])->name('offers.store');
+
+    Route::get('all',[CrudController::class,'getAllOffers']);
+
+});
+
 });
 
