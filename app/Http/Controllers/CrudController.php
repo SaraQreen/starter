@@ -2,13 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\VideoViewer;
 use App\Http\Requests\OfferRequest;
 use App\Models\Offer;
+use App\Models\Video;
+use App\Scopes\OfferScopes;
+use App\Traits\OfferTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use LaravelLocalization;
+
 class CrudController extends Controller
 {
+
+    use OfferTrait;
    
     public function __construct()
     {
@@ -46,8 +53,14 @@ class CrudController extends Controller
          //   return redirect()->back()->withErrors($validator)->withInput($request->all());
         //}
 
+
+       $file_name=  $this->saveImage($request->photo,'images/offers');
+
+         
+
         //insert
         Offer::create([
+            'photo' =>$file_name,
             'name_ar'=>$request->name_ar,
             'name_en'=>$request->name_en,
             'price'=>$request->price,
@@ -56,6 +69,8 @@ class CrudController extends Controller
         ]);
         return redirect()->back()->with(['success'=>'تم إضافة العرض بنجاح']);
     }
+
+    
 /*
     protected function getMessages(){
         return $messages=[
@@ -78,12 +93,97 @@ class CrudController extends Controller
     }*/
 
     public function getAllOffers(){
+      /* $offers= Offer::select('id',
+       'price',
+       'name_'.LaravelLocalization::getCurrentLocale().' as name',
+       'details_'.LaravelLocalization::getCurrentLocale().' as details',
+        'photo',
+       )->get(); //return collection of all result */
+
+            ################ paginate Result ########################
+
        $offers= Offer::select('id',
        'price',
        'name_'.LaravelLocalization::getCurrentLocale().' as name',
-       'details_'.LaravelLocalization::getCurrentLocale().' as details'
-       )->get(); //return collection
-       return view('offers.all',compact('offers'));
+       'details_'.LaravelLocalization::getCurrentLocale().' as details',
+        'photo',
+       )->paginate(PAGINATION_COUNT);
+
+       //return view('offers.all',compact('offers'));
+
+       return view('offers.paginations',compact('offers'));
+    }
+
+    public function editOffer($offer_id){
+        //Offer::findOrFail($offer_id);
+
+       $offer= Offer::find($offer_id); //search in given table id only
+       if(!$offer)
+        return redirect()->back();
+
+       $offer= Offer::select('id','name_ar','name_en','details_ar','details_en','price')->find($offer_id);
+
+       return view('offers.edit',compact('offer'));
+
+    }
+
+    public function delete($offer_id){
+        //check if offer_id exists
+        $offer=Offer::find($offer_id);  //Offer::where('id','$offer_id')->first();
+        if(!$offer)
+          return redirect()->back()->with(['error'=>__('messages.offer not exist')]);
+
+          $offer->delete();
+           return redirect()
+           ->route('offers.all')
+           ->with(['success'=>__('messages.offer deleted successfuly')]);
+
+    }
+
+    public function updateOffer(OfferRequest $request,$offer_id){
+        //validation of request
+
+        //check if offer exists
+
+        $offer= Offer::find($offer_id);
+        if(!$offer)
+        return redirect()->back();
+
+        //update data
+
+        $offer ->update($request->all());
+
+        return redirect()->back()->with(['success'=>'تم التحديث بنجاح']);
+
+       /*
+        $offer->update([
+            'name_ar'=> '$request ->name_ar',
+            'name_en'=> '$request ->name_en',
+            'price'=> '$request ->price',
+
+        ]);
+          */
+    }
+
+    public function getVideo(){
+       $video= Video::first();
+       event(new VideoViewer($video));  //fire event
+        return view('video')->with('video',$video);
+    }
+
+    public function getAllInactiveOffers(){
+
+        //where  whereNull  whereNotNull   whereIn
+     // return $inactiveOffers= Offer::inactive()->get();  //all inactive offers
+
+                             //global scope
+     //return $inactiveOffers= Offer::get();  //all inactive offers
+
+     //how remove global scope
+
+      return  $inactiveOffers= Offer::withoutGlobalScope(OfferScopes::class)->get();;
+
+
     }
 
 }

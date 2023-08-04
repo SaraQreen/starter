@@ -18,6 +18,10 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
+    <!-- Bootstrap css files -->
+    <link rel="stylesheet" href="{{URL::asset('assets/css/bootstrap.css')}}">
+
 </head>
 <body>
     <div id="app">
@@ -79,5 +83,7 @@
             @yield('content')
         </main>
     </div>
+    <script src="{{ asset('js/jQuery.js') }}"></script>
+    @yield('scripts')
 </body>
 </html>

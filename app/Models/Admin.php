@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable 
+class Admin extends Authenticatable 
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -21,10 +21,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'mobile',
-        'expire',
-        'age',
-       
     ];
 
     /**
@@ -34,28 +30,8 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
-
-
-    ################ Begin Relations ################
-
-    public function phone(){
-        return $this->hasOne('App\Models\Phone','user_id');
-    }
-
-
-    ################ End Relations ################
-
+    protected $guard='admin';
 
 }
